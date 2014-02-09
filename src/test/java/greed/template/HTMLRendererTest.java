@@ -1,7 +1,8 @@
 package greed.template;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import greed.code.lang.CppLanguage;
 import greed.model.Language;
 import greed.model.Param;
 import greed.model.ParamValue;
@@ -27,31 +28,32 @@ public class HTMLRendererTest {
         engine = TemplateEngine.newLanguageEngine(Language.CPP);
     }
 
-    static final ParamValue GRID_LIKE_STRING_ARRAY_PARAM =
-            new ParamValue(
-                    new Param("gridParam", Type.STRING_ARRAY_TYPE, 0),
-                    new String[] { "####", "#..#", "#..#", "####" }
-                );
+    static final Param GRID_LIKE_STRING_ARRAY_PARAM =
+            new Param("gridParam", Type.STRING_ARRAY_TYPE, 0);
+
+    static final ParamValue GRID_LIKE_STRING_ARRAY_PARAMVALUE = CppLanguage.instance.parseValue(
+            "{\"####\", \"#..#\", \"#..#\", \"####\"}",
+            GRID_LIKE_STRING_ARRAY_PARAM);
 
 
     @Test
     public void testRenderHtmlGridFilter() {
         HashMap<String, Object> model = new HashMap<String, Object>();
-        model.put("gridParam", GRID_LIKE_STRING_ARRAY_PARAM);
+        model.put("gridParam", GRID_LIKE_STRING_ARRAY_PARAMVALUE);
         String result = engine.render("${gridParam;html(grid)}", model);
 
         System.out.println(result);
-        assertThat(result, equalTo("{####,<br />&nbsp;#..#,<br />&nbsp;#..#,<br />&nbsp;####}"));
+        assertThat(result, equalTo("{&quot;####&quot;,<br />&nbsp;&quot;#..#&quot;,<br />&nbsp;&quot;#..#&quot;,<br />&nbsp;&quot;####&quot;}"));
     }
 
     @Test
     public void testRenderHtmlNonGridFilter() {
         HashMap<String, Object> model = new HashMap<String, Object>();
-        model.put("gridParam", GRID_LIKE_STRING_ARRAY_PARAM);
+        model.put("gridParam", GRID_LIKE_STRING_ARRAY_PARAMVALUE);
         String result = engine.render("${gridParam;html}", model);
 
         System.out.println(result);
-        assertThat(result, equalTo("{ ####, #..#, #..#, #### }"));
+        assertThat(result, equalTo("{ &quot;####&quot;, &quot;#..#&quot;, &quot;#..#&quot;, &quot;####&quot; }"));
     }
 
     @Test
