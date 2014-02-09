@@ -1,15 +1,16 @@
 package greed.template;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import greed.conf.ConfigException;
 import greed.model.Language;
 import greed.util.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -20,7 +21,7 @@ public class CppTemplateTest {
     private InputStream codeTemplate;
     private InputStream testTemplate;
 
-    Map<String, Object> model = TestModelFixtures.buildStubbingModel();
+    Map<String, Object> model = TestModelFixtures.buildStubbingModel(Language.CPP);
     TemplateEngine engine;
 
     @BeforeClass
@@ -48,6 +49,12 @@ public class CppTemplateTest {
         System.out.println(code);
 
         // TODO verify to make test fail on malfunctioning
+
+        // 1. verify that each long/string array is rendered well
+        assertTrue(code.contains("919LL,"));
+        assertTrue(code.contains("2147483647987987LL"));
+        assertTrue(code.contains("\"NNYYNN\","));
+        assertTrue(code.contains("\"NYNYNY\""));
     }
 
     @Test
@@ -61,6 +68,10 @@ public class CppTemplateTest {
         System.out.println(code);
 
         // TODO verify to make test fail on malfunctioning
+
+        // 1. verify to use initializer list (depends on the template)
+        assertTrue(code.contains("vector<long long> arg2 = {"));
+        assertTrue(code.contains("vector<string> arg3 = {"));
     }
 
 }

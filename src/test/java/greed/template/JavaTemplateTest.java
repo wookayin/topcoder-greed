@@ -1,7 +1,7 @@
 package greed.template;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import greed.conf.ConfigException;
 import greed.model.Language;
 import greed.util.Utils;
@@ -20,7 +20,7 @@ public class JavaTemplateTest {
     private InputStream testTemplate;
     private InputStream testJunitTemplate;
 
-    Map<String, Object> model = TestModelFixtures.buildStubbingModel();
+    Map<String, Object> model = TestModelFixtures.buildStubbingModel(Language.JAVA);
     TemplateEngine engine;
 
     @BeforeClass

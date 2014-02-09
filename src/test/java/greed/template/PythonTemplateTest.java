@@ -1,7 +1,8 @@
 package greed.template;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import greed.model.Language;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class PythonTemplateTest {
     InputStream codeTemplate;
     InputStream testTemplate;
 
-    Map<String, Object> model = TestModelFixtures.buildStubbingModel();
+    Map<String, Object> model = TestModelFixtures.buildStubbingModel(Language.PYTHON);
     TemplateEngine engine;
 
     @Before
@@ -48,13 +49,18 @@ public class PythonTemplateTest {
         assertThat(testCode, containsString("do_test(arg1, arg2, arg3, __expected"));
         assertThat(testCode, containsString("arg1 = 15"));
         assertThat(testCode, containsString("arg2 = (\n" +
-            "            919, 111, 234,\n" +
-            "            234, 567, 555\n" +
+            "            919,\n" +
+            "            111,\n" +
+            "            234,\n" +
+            "            567,\n" +
+            "            2147483647987987\n" +
             "        )"
         ));
-        assertThat(testCode, containsString("__expected = (\n" +
-            "            \"abcd\", \"efg\",\n" +
-            "            \"123\", \"456\"\n" +
+        assertThat(testCode, containsString("arg3 = (\n" +
+            "            \"NNYYNN\",\n" +
+            "            \"NNNNNN\",\n" +
+            "            \"YNYNYN\",\n" +
+            "            \"NYNYNY\"\n" +
             "        )"
         ));
         assertThat(testCode, containsString("return do_test(arg1, arg2, arg3, __expected,"));
