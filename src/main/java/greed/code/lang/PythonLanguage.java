@@ -1,13 +1,17 @@
 package greed.code.lang;
 
-import com.floreysoft.jmte.NamedRenderer;
-import com.floreysoft.jmte.RenderFormatInfo;
 import greed.code.LanguageRenderer;
 import greed.code.LanguageTrait;
-import greed.model.*;
+import greed.model.Method;
+import greed.model.Param;
+import greed.model.Primitive;
+import greed.model.Type;
 
 import java.util.List;
 import java.util.Locale;
+
+import com.floreysoft.jmte.NamedRenderer;
+import com.floreysoft.jmte.RenderFormatInfo;
 
 /**
  * Support for the python language.
@@ -59,14 +63,6 @@ public class PythonLanguage extends AbstractLanguage implements LanguageRenderer
     @Override
     public String renderParam(Param param) {
         return param.getName();
-    }
-
-    @Override
-    public String renderParamValue(ParamValue paramValue) {
-        String value = paramValue.getValue();
-
-        // yep, just return as-is
-        return value;
     }
 
     @Override

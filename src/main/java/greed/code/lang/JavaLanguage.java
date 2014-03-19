@@ -1,13 +1,13 @@
 package greed.code.lang;
 
-import com.floreysoft.jmte.NamedRenderer;
-import com.floreysoft.jmte.RenderFormatInfo;
-import greed.model.ParamValue;
 import greed.model.Primitive;
 import greed.model.Type;
 
 import java.util.List;
 import java.util.Locale;
+
+import com.floreysoft.jmte.NamedRenderer;
+import com.floreysoft.jmte.RenderFormatInfo;
 
 /**
  * Greed is good! Cheers!
@@ -44,14 +44,10 @@ public class JavaLanguage extends CStyleLanguage {
     }
 
     @Override
-    public String renderParamValue(ParamValue paramValue) {
-        Type paramType = paramValue.getParam().getType();
-        String value = paramValue.getValue();
-        if (paramType.isArray())
-            return value;
-        if (paramType.getPrimitive() == Primitive.LONG)
+    protected String renderParamValuePrimitive(Primitive type, String value) {
+        if (type == Primitive.LONG)
             return value + "L";
-        return value;
+        return super.renderParamValuePrimitive(type, value);
     }
 
     @Override

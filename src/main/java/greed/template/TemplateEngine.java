@@ -1,14 +1,20 @@
 package greed.template;
 
-import com.floreysoft.jmte.Engine;
-import com.floreysoft.jmte.NamedRenderer;
-import com.floreysoft.jmte.RenderFormatInfo;
 import greed.code.LanguageManager;
 import greed.model.Language;
 import greed.util.FileSystem;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Stack;
+import java.util.UUID;
+
+import com.floreysoft.jmte.Engine;
+import com.floreysoft.jmte.NamedRenderer;
+import com.floreysoft.jmte.RenderFormatInfo;
 
 /**
  * Greed is good! Cheers!
@@ -31,6 +37,7 @@ public class TemplateEngine {
         engine = new Engine();
         engine.registerNamedRenderer(new StringUtilRenderer());
         engine.registerNamedRenderer(new ContestCategoryRenderer());
+        engine.registerNamedRenderer(new ParamValueTcRenderer());
         engine.registerNamedRenderer(new HTMLRenderer());
         engine.registerNamedRenderer(new ReifyRenderer());
         engine.registerNamedRenderer(new FormatRenderer());

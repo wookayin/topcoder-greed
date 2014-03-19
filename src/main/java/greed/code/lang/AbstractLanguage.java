@@ -2,7 +2,12 @@ package greed.code.lang;
 
 import greed.code.LanguageRenderer;
 import greed.code.LanguageTrait;
-import greed.model.*;
+import greed.model.Method;
+import greed.model.Param;
+import greed.model.ParamValue;
+import greed.model.Primitive;
+import greed.model.Type;
+import greed.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +32,18 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
 
     @Override
     public ParamValue parseValue(String value, Param param) {
-        if (!param.getType().isArray())
-            return new ParamValue(param, value);
+        if (!param.getType().isArray()) {
+            return new ParamValue(param, value.trim());
+            // TODO should we throw if malformed?
+        }
 
+        // assuming the parameter is an array, surrounded with '{' and '}',
+        // parse the input string into an array of elements.
         value = value.trim();
-        value = value.substring(1, value.length() - 1);
+        value = value.substring(1, value.length() - 1); // drops '{', '}'
         value = value.replaceAll("\n", "");
         value = value.trim(); //need a second trim in case it is an empty list {  }
+
         if (param.getType().getPrimitive() == Primitive.STRING) {
             boolean inString = false;
             ArrayList<String> valueList = new ArrayList<String>();
@@ -43,7 +53,7 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
                 char c = value.charAt(i);
                 if (c == '"') {
                     if (inString) {
-                        valueList.add('"' + buf.toString() + '"');
+                        valueList.add(buf.toString());
                     } else {
                         buf.setLength(0);
                     }
@@ -55,13 +65,12 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
 
             return new ParamValue(param, valueList.toArray(new String[0]));
         } else if (value.length() == 0) {
-            //Empty array
+            // Empty array
             return new ParamValue( param, new String[]{} );
         } else {
             String[] valueList = value.split(",");
-            Param paramWithPrim = new Param(param.getName(), Type.primitiveType(param.getType().getPrimitive()), param.getIndex());
             for (int i = 0; i < valueList.length; i++) {
-            	valueList[i] = renderParamValue(new ParamValue(paramWithPrim, valueList[i].trim()));
+                valueList[i] = valueList[i].trim();
             }
             return new ParamValue(param, valueList);
         }
@@ -80,6 +89,51 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
             buf.append(renderParam(params[i]));
         }
         return buf.toString();
+    }
+
+    @Override
+    public String renderParamValue(ParamValue paramValue) {
+        Type paramType = paramValue.getParam().getType();
+
+        if (paramType.isArray()) {
+            return renderParamValueArray(paramType, paramValue.getValueList());
+        }
+        else {
+            return renderParamValuePrimitive(
+                    paramType.getPrimitive(), paramValue.getValue());
+        }
+    }
+
+    /**
+     * A base implementation for rendering an param value of array type
+     * into the string that can be properly interpreted by the language.
+     * <p>
+     * The default implementation is joining all the elements, rendered with
+     * {@link #renderParamValuePrimitive(Type, String)}.
+     *
+     * TODO refactor by exploiting a polymorphism of ParamValue.
+     */
+    protected String renderParamValueArray(Type type, String[] value) {
+        if (!type.isArray())
+            throw new IllegalArgumentException("type should be array-like");
+
+        String[] renderedElements = new String[value.length];
+        for(int i = 0; i < value.length; i++)
+            renderedElements[i] = renderParamValuePrimitive(type.getPrimitive(), value[i]);
+
+        return "{" + StringUtil.join(renderedElements, ", ") + "}";
+    }
+
+    /**
+     * A template method for rendering a primitive param value into the string
+     * that can be properly interpreted by the language. Expected to be overriden.
+     * For instance, long-type integers in C++ should be followed by the 'LL' suffix.
+     * <p>
+     * The default implementation is returning the canonical form as-is
+     * (i.e. {@code value})
+     */
+    protected String renderParamValuePrimitive(Primitive type, String value) {
+        return value;
     }
 
     @Override
@@ -110,4 +164,5 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
         });
         return namedRenderers;
     }
+
 }
