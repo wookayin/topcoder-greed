@@ -31,7 +31,9 @@ public class BasicModelTemplateTest {
 
         String template = "${foreach in.ValueList v ,}${v}${end}";
         String rendered = engine.render(template, Collections.singletonMap("in", (Object)paramValue));
-        assertEquals("0LL, 0LL", rendered);
+
+        // TODO is this right?
+        assertEquals("0LL,0LL", rendered);
     }
 
 }

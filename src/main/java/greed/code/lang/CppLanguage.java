@@ -1,6 +1,7 @@
 package greed.code.lang;
 
 import greed.code.LanguageRenderer;
+import greed.model.Argument;
 import greed.model.Language;
 import greed.model.Primitive;
 import greed.model.Type;
@@ -42,10 +43,11 @@ public class CppLanguage extends CStyleLanguage implements LanguageRenderer {
     }
 
     @Override
-    protected String renderParamValuePrimitive(Primitive type, String value) {
-        if (type == Primitive.LONG)
-            return value + "LL";
-        return super.renderParamValuePrimitive(type, value);
+    protected String renderParamValuePrimitive(Argument arg) {
+        // TODO use equals (implement it first)
+        if (arg.getType().getPrimitive() == Primitive.LONG)
+            return arg.getValue() + "LL";
+        return super.renderParamValuePrimitive(arg);
     }
 
 }

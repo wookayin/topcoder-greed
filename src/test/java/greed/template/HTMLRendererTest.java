@@ -70,12 +70,12 @@ public class HTMLRendererTest {
 
         model.put("gridParam", new ParamValue(
                     new Param("gridParam", Type.STRING_ARRAY_TYPE, 1),
-                    new String[] {"\"\"", ".."}
+                    new String[] {"\"\"", ".."} // 2x2
                     )
                 );
         String gridResult = engine.render("${gridParam;html(grid)}", model);
         System.out.println(gridResult);
-        assertThat(gridResult, equalTo("{&quot;&quot;,<br />&nbsp;..}"));
+        assertThat(gridResult, equalTo("{&quot;&quot;&quot;&quot;,<br />&nbsp;&quot;..&quot;}"));
     }
 
 }

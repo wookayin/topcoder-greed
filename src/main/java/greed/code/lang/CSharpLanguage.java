@@ -1,5 +1,6 @@
 package greed.code.lang;
 
+import greed.model.Argument;
 import greed.model.Primitive;
 import greed.model.Type;
 
@@ -38,10 +39,11 @@ public class CSharpLanguage extends CStyleLanguage {
     }
 
     @Override
-    protected String renderParamValuePrimitive(Primitive type, String value) {
-        if (type == Primitive.LONG)
-            return value + "L";
-        return super.renderParamValuePrimitive(type, value);
+    protected String renderParamValuePrimitive(Argument arg) {
+        // TODO use equals (implement it first)
+        if (arg.getType().getPrimitive() == Primitive.LONG)
+            return arg.getValue() + "L";
+        return super.renderParamValuePrimitive(arg);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package greed.template;
 
 import greed.code.LanguageManager;
+import greed.model.Argument;
 import greed.model.Language;
 import greed.model.Method;
 import greed.model.ParamValue;
@@ -42,43 +43,44 @@ public class HTMLRenderer implements NamedRenderer {
                 break;
             default:
                 sb.append(v.charAt(i));
-            } 
+            }
         }
         return sb.toString();
     }
-    
+
     private String renderParamValue(ParamValue pv, String param) {
         Type t = pv.getParam().getType();
 
         if (t.isString()) {
             if (t.isArray()) {
-                String[] x = pv.getValueList();
+                Argument[] x = pv.getArgumentList();
                 boolean useGrid = isGridMode(param, x);
                 return doRenderStringArray(x, useGrid);
             } else {
-                return stripHTML(pv.getValue());
+                return stripHTML(pv.getArgument().getValue());
             }
         }
         return pv.getValue();
     }
 
-    private boolean isGridMode(String param, String[] x) {
+    private boolean isGridMode(String param, Argument[] x) {
         boolean grid = ((x.length > 1) && "grid".equals(param));
         if (grid) {
-            int s = x[0].length();
-            for (String y : x) {
-                grid = ( grid && (s == y.length()) );
+            int s = x[0].getValue().length();
+            for (Argument y : x) {
+                if(!y.getType().isString()) return false;
+                grid = ( grid && (s == y.getValue().length()) );
             }
         }
         return grid;
     }
 
-    private String doRenderStringArray(String[] x, boolean grid) {
+    private String doRenderStringArray(Argument[] x, boolean grid) {
         StringBuilder sb = new StringBuilder();
         String[] xQuoted = new String[x.length];
 
         for(int i = 0; i < x.length; ++ i) {
-            xQuoted[i] = stripHTML(x[i]);
+            xQuoted[i] = stripHTML(x[i].toString());
         }
 
         sb.append("{");

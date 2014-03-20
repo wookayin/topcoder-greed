@@ -5,7 +5,13 @@ import greed.code.lang.CppLanguage;
 import greed.code.lang.JavaLanguage;
 import greed.code.lang.PythonLanguage;
 import greed.code.transform.JavaPackageRemover;
-import greed.model.*;
+import greed.model.Argument;
+import greed.model.Language;
+import greed.model.Method;
+import greed.model.Param;
+import greed.model.ParamValue;
+import greed.model.Primitive;
+import greed.model.Type;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -69,6 +75,12 @@ public class LanguageManager {
                 @Override
                 public String render(ParamValue paramValue, Locale locale) {
                     return renderer.renderParamValue(paramValue);
+                }
+            });
+            engine.registerRenderer(Argument.class, new Renderer<Argument>() {
+                @Override
+                public String render(Argument argument, Locale locale) {
+                    return renderer.renderArgument(argument);
                 }
             });
             engine.registerRenderer(Param[].class, new Renderer<Param[]>() {

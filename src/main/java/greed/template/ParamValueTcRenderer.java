@@ -1,5 +1,6 @@
 package greed.template;
 
+import greed.model.Argument;
 import greed.model.Param;
 import greed.model.ParamValue;
 
@@ -87,12 +88,12 @@ public class ParamValueTcRenderer implements NamedRenderer {
         String separator = isGrid ? ",\n " : ", ";
 
         // TODO duplication with ParamValue.Value
-        String[] valueList = paramValue.getValueList();
+        Argument[] valueList = paramValue.getValueList();
         StringBuilder buf = new StringBuilder();
         buf.append("{ ");
         String sep = "";
         for (int i = 0; i < valueList.length; ++ i) {
-            String s = valueList[i];
+            String s = valueList[i].toString();
             if(i == valueList.length) sep = "";
             buf.append(sep);
             sep = separator;

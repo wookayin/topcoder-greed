@@ -16,6 +16,9 @@ package greed.model;
  * Note: Prior to version 2.0, they were bounded with the current language.
  * (e.g. "0LL" in C++, "0L" in Java / all strings were with quotation mark)
  *
+ * @see Param
+ * @see Argument
+ *
  * @author Shiva Wu
  * @author vexorian
  * @author Jongwook Choi (wook)
@@ -23,45 +26,65 @@ package greed.model;
  */
 public class ParamValue {
     private Param param;
-    private String value;
-    private String[] valueList;
+    private Argument value;
+
+    /** @deprecated going to be replaced with {@link value} */
+    @Deprecated
+    private Argument[] valueList;
 
     /**
-     * construct
      * @param param
      * @param value the value of parameter, in the canonical representation.
      */
     public ParamValue(Param param, String value) {
         this.param = param;
-        this.value = value;
-        this.valueList = new String[]{value};
+        this.value = new Argument(param.getType(), value);
+        this.valueList = new Argument[]{ this.value };
     }
 
     public ParamValue(Param param, String[] valueList) {
         this.param = param;
-        StringBuilder buf = new StringBuilder();
-        buf.append("{ ");
-        String sep = "";
-        for (String s : valueList) {
-            buf.append(sep);
-            sep = ", ";
-            buf.append(s);
-        }
-        buf.append(" }");
-        this.value = buf.toString();
-        this.valueList = valueList;
+
+        // TODO how to handle this? (consider polymorphism)
+        this.value = new Argument(param.getType(), "<<<< Can't Use >>>");
+        this.valueList = new Argument[valueList.length];
+
+        Type elemType = Type.primitiveType(param.getType().getPrimitive());
+        for(int i = 0; i < valueList.length; ++ i)
+            this.valueList[i] = new Argument(elemType, valueList[i]);
     }
 
     public Param getParam() {
         return param;
     }
 
-    public String getValue() {
+    public Argument getArgument() {
         return value;
     }
 
-    public String[] getValueList() {
-        return valueList;
+    // TODO in beta: can be removed
+    public Argument[] getArgumentList() {
+        return this.valueList;
+    }
+
+    // TODO in beta: can be removed
+    public String[] getValueStringList() {
+        int n = this.valueList.length;
+        String[] ret = new String[n];
+        for(int i = 0; i < n; ++ i)
+            ret[i] = this.valueList[i].toString();
+        return ret;
+    }
+
+    /** @deprecated in favor of {@link #getArgument()} */
+    @Deprecated
+    public String getValue() {
+        return value.toString();
+    }
+
+    @Deprecated
+    public Argument[] getValueList() {
+        return this.valueList;
     }
 
     public int getValueListLength() {

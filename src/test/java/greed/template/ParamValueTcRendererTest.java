@@ -81,8 +81,8 @@ public class ParamValueTcRendererTest {
     public void paramValueArraysInGridStyle() {
         assertParamValue(Type.STRING_ARRAY_TYPE, "{}", rendersTo("{  }"));
 
-        // TODO is this right? with quotation? or without?
+        // TODO is this right? with quotation? or without? or newline?
         assertParamValue(Type.STRING_ARRAY_TYPE, "{ \"YYY\", \"NNN\", \"YNY\" }",
-                rendersTo("{ YYY, NNN, YNY }"));
+                rendersTo("{ \"YYY\", \"NNN\", \"YNY\" }"));
     }
 }

@@ -2,6 +2,7 @@ package greed.code.lang;
 
 import greed.code.LanguageRenderer;
 import greed.code.LanguageTrait;
+import greed.model.Argument;
 import greed.model.Method;
 import greed.model.Param;
 import greed.model.ParamValue;
@@ -32,19 +33,32 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
 
     @Override
     public ParamValue parseValue(String value, Param param) {
-        if (!param.getType().isArray()) {
-            return new ParamValue(param, value.trim());
-            // TODO should we throw if malformed?
+        Type type = param.getType();
+        value = value.trim();
+
+        // TODO throw exception if malformed or validation fails
+        if (!type.isArray()) {
+            // do some required canonization
+            if(type.getPrimitive() == Primitive.STRING) {
+                if(value.length() >= 2 && value.charAt(0) == '"' &&
+                        value.charAt(value.length() - 1) == '"') {
+                    // drops quotation
+                    value = value.substring(1, value.length() - 1);
+                }
+                return new ParamValue(param, value);
+            }
+            else {
+                return new ParamValue(param, value);
+            }
         }
 
         // assuming the parameter is an array, surrounded with '{' and '}',
         // parse the input string into an array of elements.
-        value = value.trim();
         value = value.substring(1, value.length() - 1); // drops '{', '}'
         value = value.replaceAll("\n", "");
         value = value.trim(); //need a second trim in case it is an empty list {  }
 
-        if (param.getType().getPrimitive() == Primitive.STRING) {
+        if (type.getPrimitive() == Primitive.STRING) {
             boolean inString = false;
             ArrayList<String> valueList = new ArrayList<String>();
             StringBuilder buf = new StringBuilder();
@@ -96,11 +110,11 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
         Type paramType = paramValue.getParam().getType();
 
         if (paramType.isArray()) {
-            return renderParamValueArray(paramType, paramValue.getValueList());
+            // TODO extract the list itself from Argument
+            return renderParamValueArray(paramValue.getArgumentList());
         }
         else {
-            return renderParamValuePrimitive(
-                    paramType.getPrimitive(), paramValue.getValue());
+            return renderParamValuePrimitive(paramValue.getArgument());
         }
     }
 
@@ -113,13 +127,10 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
      *
      * TODO refactor by exploiting a polymorphism of ParamValue.
      */
-    protected String renderParamValueArray(Type type, String[] value) {
-        if (!type.isArray())
-            throw new IllegalArgumentException("type should be array-like");
-
-        String[] renderedElements = new String[value.length];
-        for(int i = 0; i < value.length; i++)
-            renderedElements[i] = renderParamValuePrimitive(type.getPrimitive(), value[i]);
+    protected String renderParamValueArray(Argument[] args) {
+        String[] renderedElements = new String[args.length];
+        for(int i = 0; i < args.length; i++)
+            renderedElements[i] = renderParamValuePrimitive(args[i]);
 
         return "{" + StringUtil.join(renderedElements, ", ") + "}";
     }
@@ -129,11 +140,20 @@ public abstract class AbstractLanguage implements LanguageTrait, LanguageRendere
      * that can be properly interpreted by the language. Expected to be overriden.
      * For instance, long-type integers in C++ should be followed by the 'LL' suffix.
      * <p>
-     * The default implementation is returning the canonical form as-is
+     * The default implementation is returning the value with the common quotation
+     * for strings, or the canonical form as-is for else.
      * (i.e. {@code value})
      */
-    protected String renderParamValuePrimitive(Primitive type, String value) {
-        return value;
+    protected String renderParamValuePrimitive(Argument arg) {
+        if(arg.getType().isString())
+            return '"' + arg.getValue() + '"';
+        else
+            return arg.getValue();
+    }
+
+    @Override
+    public String renderArgument(Argument arg) {
+        return renderParamValuePrimitive(arg);
     }
 
     @Override
