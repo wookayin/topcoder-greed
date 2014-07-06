@@ -1,5 +1,7 @@
 package greed.model;
 
+import java.util.Arrays;
+
 /**
  * The model containing the parameter value, as well as the parameter.
  *
@@ -45,13 +47,15 @@ public class ParamValue {
     public ParamValue(Param param, String[] valueList) {
         this.param = param;
 
-        // TODO how to handle this? (consider polymorphism)
-        this.value = new Argument(param.getType(), "<<<< Can't Use >>>");
+        // TODO how to handle this? (consider plymorphism)
         this.valueList = new Argument[valueList.length];
 
         Type elemType = Type.primitiveType(param.getType().getPrimitive());
         for(int i = 0; i < valueList.length; ++ i)
             this.valueList[i] = new Argument(elemType, valueList[i]);
+
+        this.value = new Argument(param.getType(),
+                Arrays.asList(this.valueList).toString());
     }
 
     public Param getParam() {
@@ -93,5 +97,11 @@ public class ParamValue {
 
     public boolean isMultiLine() {
         return valueList.length > 1;
+    }
+
+
+    @Override
+    public String toString() {
+        return "{" + param + " : " + value.toString() + "}";
     }
 }

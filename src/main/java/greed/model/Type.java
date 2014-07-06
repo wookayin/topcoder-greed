@@ -12,6 +12,13 @@ public class Type {
         this.dim = dim;
     }
 
+    @Override
+    public String toString() {
+        String s = primitive.toString().toLowerCase();
+        for(int i = 0; i < dim; ++ i) s += "[]";
+        return s;
+    }
+
 
     public static Type primitiveType(Primitive primitive) {
         switch(primitive) {
