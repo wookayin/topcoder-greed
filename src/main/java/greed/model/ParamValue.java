@@ -1,6 +1,7 @@
 package greed.model;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * The model containing the parameter value, as well as the parameter.
@@ -26,7 +27,7 @@ import java.util.Arrays;
  * @author Jongwook Choi (wook)
  *
  */
-public class ParamValue {
+public class ParamValue implements Iterable<Argument> {
     private Param param;
     private Argument value;
 
@@ -71,6 +72,13 @@ public class ParamValue {
         return this.valueList;
     }
 
+    @Override
+    public Iterator<Argument> iterator() {
+        // make ParamValue itself iterable,
+        // so that it can be used with 'foreach' statement in the template
+        return Arrays.asList(this.valueList).iterator();
+    }
+
     // TODO in beta: can be removed
     public String[] getValueStringList() {
         int n = this.valueList.length;
@@ -104,4 +112,5 @@ public class ParamValue {
     public String toString() {
         return "{" + param + " : " + value.toString() + "}";
     }
+
 }

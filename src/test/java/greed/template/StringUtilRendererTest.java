@@ -1,10 +1,13 @@
 package greed.template;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
+import greed.model.Argument;
 import greed.model.Language;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -21,8 +24,8 @@ import org.junit.Test;
  */
 public class StringUtilRendererTest {
 
-    private Map<String, Object> createModel(String key, String value) {
-        return Collections.singletonMap(key, (Object) value);
+    private Map<String, Object> createModel(String key, Object value) {
+        return Collections.singletonMap(key, value);
     }
 
     private TemplateEngine engine;
@@ -93,6 +96,25 @@ public class StringUtilRendererTest {
         model = createModel("Var", "Topcoder Single Round Match 200");
         assertEquals("Topcoder Single Round Match 200",
                 engine.render("${Var;string()}", model));
+    }
+
+    @Test
+    public void testOnArgument() {
+        // does it handle correctly instances of 'Argument'?
+
+        Map<String, Object> model = new LinkedHashMap<String, Object>();
+        model.put("LongVar", Argument.ofLong(9876543210L));
+        model.put("StringVar", Argument.ofString("YNYN"));
+
+        assertThat(engine.render("${LongVar}", model), equalTo("9876543210LL")); // oops. the language is C++
+        assertThat(engine.render("${LongVar;string}", model), equalTo("9876543210"));
+        assertThat(engine.render("${LongVar;string(\"unquote\")}", model), equalTo("9876543210"));
+
+        // TODO decide the behavior on string arguments -- with quote? without quote?
+        // as of now, just as in '.Value', it is quoted by default.
+        assertThat(engine.render("${StringVar}", model), equalTo("\"YNYN\""));
+        assertThat(engine.render("${StringVar;string}", model), equalTo("\"YNYN\""));
+        assertThat(engine.render("${StringVar;string(\"unquote\")}", model), equalTo("YNYN"));
     }
 
 }

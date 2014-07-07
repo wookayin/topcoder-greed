@@ -1,5 +1,7 @@
 package greed.template;
 
+import greed.model.Argument;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +11,16 @@ import com.floreysoft.jmte.NamedRenderer;
 import com.floreysoft.jmte.RenderFormatInfo;
 
 /**
- * Greed is good! Cheers!
+ * Renderer used in templates such as <code>${v;string("unquote")}</code>.
+ * <p>
+ * Available filters:
+ * <ul>
+ *  <li>lower</li>
+ *  <li>upcasefirst</li>
+ *  <li>removespace</li>
+ *  <li>unquote</li>
+ *  <li>abbr</li>
+ * </ul>
  *
  * @author Shiva wu
  * @author vexorian
@@ -31,10 +42,19 @@ public class StringUtilRenderer implements NamedRenderer {
 
     @Override
     public String render(Object o, String param, Locale locale) {
-        if (!(o instanceof String))
+        if (o instanceof String) {
+            return renderString((String)o, param);
+        }
+        else if (o instanceof Argument) {
+            // just for compatbility prior to 2.0-RC.
+            return renderArgument((Argument)o, param);
+        }
+        else {
             return "";
+        }
+    }
 
-        String result = (String) o;
+    private String renderString(String result, String param) {
         for (String func: parseParams(param)) {
             if ("lower".equals(func)) {
                 result = applyLower(result);
@@ -54,6 +74,12 @@ public class StringUtilRenderer implements NamedRenderer {
         }
         return result;
     }
+
+    private String renderArgument(Argument arg, String param) {
+        return renderString(arg.toString(), param);
+    }
+
+
 
     private String applyLower(String s) {
         return s.toLowerCase();
@@ -116,6 +142,6 @@ public class StringUtilRenderer implements NamedRenderer {
 
     @Override
     public Class<?>[] getSupportedClasses() {
-        return new Class<?>[] { String.class };
+        return new Class<?>[] { String.class, Argument.class };
     }
 }
