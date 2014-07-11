@@ -8,6 +8,8 @@ public class Type {
     private final int dim;
 
     Type(Primitive primitive, int dim) {
+        if(primitive == null) throw new NullPointerException("primitive");
+
         this.primitive = primitive;
         this.dim = dim;
     }
@@ -68,5 +70,26 @@ public class Type {
     public boolean isLongInteger() {
         return this.primitive == Primitive.LONG;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + dim;
+        result = prime * result + primitive.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj instanceof Type) {
+            Type rhs = (Type) obj;
+            return this.getDim() == rhs.getDim() &&
+                    this.getPrimitive().equals(rhs.getPrimitive());
+        }
+        return false;
+    }
+
 
 }

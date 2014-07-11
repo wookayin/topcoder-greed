@@ -1,5 +1,7 @@
 package greed.model;
 
+import greed.util.StringUtil;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -45,18 +47,25 @@ public class ParamValue implements Iterable<Argument> {
         this.valueList = new Argument[]{ this.value };
     }
 
+    /**
+     * @param param
+     * @param valueList the list of values, each item being in the canonical representation.
+     */
     public ParamValue(Param param, String[] valueList) {
         this.param = param;
 
-        // TODO how to handle this? (consider plymorphism)
+        // TODO how to handle this? (consider polymorphism)
         this.valueList = new Argument[valueList.length];
 
         Type elemType = Type.primitiveType(param.getType().getPrimitive());
         for(int i = 0; i < valueList.length; ++ i)
             this.valueList[i] = new Argument(elemType, valueList[i]);
 
-        this.value = new Argument(param.getType(),
-                Arrays.asList(this.valueList).toString());
+        // TODO how to get rid of this?
+        String valueArrJoined;
+        if(this.valueList.length == 0) valueArrJoined = "{ }";
+        else valueArrJoined = "{ " + StringUtil.join(this.valueList, ", ") + " }";
+        this.value = new Argument(param.getType(), valueArrJoined);
     }
 
     public Param getParam() {

@@ -57,7 +57,7 @@ public class HTMLRenderer implements NamedRenderer {
                 boolean useGrid = isGridMode(param, x);
                 return doRenderStringArray(x, useGrid);
             } else {
-                return stripHTML(pv.getArgument().getValue());
+                return stripHTML(pv.getArgument().toString());
             }
         }
         return pv.getValue();
@@ -76,6 +76,8 @@ public class HTMLRenderer implements NamedRenderer {
     }
 
     private String doRenderStringArray(Argument[] x, boolean grid) {
+        if(x.length == 0) return "{ }";
+
         StringBuilder sb = new StringBuilder();
         String[] xQuoted = new String[x.length];
 
@@ -99,6 +101,10 @@ public class HTMLRenderer implements NamedRenderer {
     public String render(Object o, String param, Locale locale) {
         if (o instanceof ParamValue) {
             return renderParamValue( (ParamValue)o, param);
+        }
+        if (o instanceof Argument) {
+            Argument arg = (Argument) o;
+            return stripHTML(arg.getValue());
         }
         else if (o instanceof String) {
             return stripHTML( (String)o );
@@ -128,6 +134,6 @@ public class HTMLRenderer implements NamedRenderer {
 
     @Override
     public Class<?>[] getSupportedClasses() {
-        return new Class<?>[]{ ParamValue.class, String.class, Type.class, Method.class };
+        return new Class<?>[]{ ParamValue.class, Argument.class, String.class, Type.class, Method.class };
     }
 }

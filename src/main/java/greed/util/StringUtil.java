@@ -25,4 +25,11 @@ public class StringUtil {
         }
         return bud.toString();
     }
+
+    public static String join(Object[] arrays, String sep) {
+        int n = arrays.length;
+        String[] strs = new String[n];
+        for(int i = 0; i < n; ++ i) strs[i] = arrays[i].toString();
+        return join(strs, sep);
+    }
 }

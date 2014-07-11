@@ -53,7 +53,7 @@ public class Argument {
 
     @Override
     public String toString() {
-        if(type == Type.STRING_TYPE) {
+        if(Type.STRING_TYPE.equals(type)) {
             // TODO I don't think this is correct. But the value is quoted once,
             // because by doing so all the previous templates that depend on
             // ${pv.valueList} or ${pv.value}, although deprecated.
